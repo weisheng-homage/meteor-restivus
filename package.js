@@ -18,12 +18,16 @@ Package.onUse(function (api) {
   api.use('simple:json-routes@2.1.0');
 
   api.addFiles('lib/auth.coffee', 'server');
+  api.addFiles('lib/oauth2.coffee', 'server');
   api.addFiles('lib/iron-router-error-to-response.js', 'server');
   api.addFiles('lib/route.coffee', 'server');
   api.addFiles('lib/restivus.coffee', 'server');
 
+  api.addFiles('lib/client/oauth2.coffee', 'client');
+
   // Exports
   api.export('Restivus', 'server');
+  api.export('OAuth2', 'client');
 });
 
 
@@ -40,6 +44,7 @@ Package.onTest(function (api) {
   api.use('mongo');
 
   api.addFiles('lib/route.coffee', 'server');
+  api.addFiles('lib/oauth2.coffee', 'server');
   api.addFiles('test/api_tests.coffee', 'server');
   api.addFiles('test/route_unit_tests.coffee', 'server');
   api.addFiles('test/authentication_tests.coffee', 'server');

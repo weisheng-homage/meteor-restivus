@@ -22,6 +22,8 @@ class @Restivus
     # Configure API with the given options
     _.extend @_config, options
 
+
+
     if @_config.enableCors
       corsHeaders =
         'Access-Control-Allow-Origin': '*'
@@ -48,7 +50,10 @@ class @Restivus
     # provided, append it to the base path of the API
     if @_config.version
       @_config.apiPath += @_config.version + '/'
-
+    # Add oauth2 if oauth2Models is configured
+    if @_config.oauth2Model
+      @oauth2 = new OAuth2 options
+      @_initOAuth2()
     # Add default login and logout endpoints if auth is configured
     if @_config.useDefaultAuth
       @_initAuth()
@@ -259,6 +264,28 @@ class @Restivus
             statusCode: 404
             body: {status: 'fail', message: 'Unable to retrieve users'}
 
+  ###
+    Add /oauth/token endpoints to the API
+  ###
+  _initOAuth2: ->
+    self = this
+    @addRoute 'oauth/token', {authRequired: false},
+      post: ->
+        self.oauth2.tokenController @bodyParams
+
+    Meteor.methods(
+      oauth2Grant: (clientId, redirectUri) ->
+        userId = Meteor.userId()
+        if userId
+          code = self.oauth2.codeController userId, clientId, redirectUri
+          if code and code.success != false
+            code = encodeURIComponent(code.code)
+            "#{redirectUri}?code=#{code}"
+          else
+            throw new Meteor.Error 'invalid-code', 'invalid code-flow'
+        else
+          throw new Meteor.Error 'not-login', 'User not login'
+    )
 
   ###
     Add /login and /logout endpoints to the API

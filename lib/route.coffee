@@ -178,9 +178,12 @@ class share.Route
       will contain the auth data when successful and an optional error response when auth fails.
   ###
   _authAccepted: (endpointContext, endpoint) ->
-    if endpoint.authRequired
-      return @_authenticate endpointContext
-    else return { success: true }
+      if endpoint.authRequired
+        if @api.oauth2
+          return @api.oauth2.auth endpointContext
+        else
+          return @_authenticate endpointContext
+      else return { success: true }
 
 
   ###
@@ -259,7 +262,7 @@ class share.Route
       response.write body
       response.end()
     if statusCode in [401, 403]
-      # Hackers can measure the response time to determine things like whether the 401 response was 
+      # Hackers can measure the response time to determine things like whether the 401 response was
       # caused by bad user id vs bad password.
       # In doing so, they can first scan for valid user ids regardless of valid passwords.
       # Delay by a random amount to reduce the ability for a hacker to determine the response time.
