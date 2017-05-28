@@ -61,8 +61,8 @@ class @OAuth2
 
     if user and @_models.user.checkPassword user, password
       userId = @_models.user.getId user
-      refreshToken = @_models.refreshToken.create clientId, userId, []
-      accessToken = @_models.accessToken.create clientId, userId, [], @_models.accessToken.ttl
+      refreshToken = @_models.refreshToken.create userId, clientId, []
+      accessToken = @_models.accessToken.create userId, clientId, [], @_models.accessToken.ttl
       {
         "refresh_token": refreshToken,
         "access_token": accessToken,
@@ -91,7 +91,7 @@ class @OAuth2
           "expires_in": expires
         }
       else
-        accessToken = @_models.accessToken.create clientId, userId, [], @_models.accessToken.ttl
+        accessToken = @_models.accessToken.create userId, clientId, [], @_models.accessToken.ttl
         {
           "refresh_token": refreshToken,
           "access_token": accessToken,
@@ -111,9 +111,9 @@ class @OAuth2
     codeP = @_models.code.fetchByCode(code)
     if codeP and @_models.code.getClientId(codeP) == clientId
       userId = @_models.code.getUserId codeP
-      refreshToken = @_models.refreshToken.create clientId, userId, []
+      refreshToken = @_models.refreshToken.create userId, clientId, []
       console.warn refreshToken
-      accessToken = @_models.accessToken.create clientId, userId, [], @_models.accessToken.ttl
+      accessToken = @_models.accessToken.create userId, clientId, [], @_models.accessToken.ttl
       @_models.code.removeByCode code
       {
         "refresh_token": refreshToken,
